@@ -23,7 +23,6 @@ MEETUP_API_HOST = 'https://api.meetup.com'
 EVENTS_URL = MEETUP_API_HOST + '/2/events.json'
 RSVPS_URL = MEETUP_API_HOST + '/2/rsvps.json'
 PHOTOS_URL = MEETUP_API_HOST + '/2/photos.json'
-GROUP_URLNAME = 'pythonkc'
 
 
 class PythonKCMeetups(object):
@@ -34,7 +33,7 @@ class PythonKCMeetups(object):
     """
 
     def __init__(self, api_key, num_past_events=None, http_timeout=1,
-                 http_retries=2):
+                 http_retries=2, group_urlname='pythonkc'):
         """
         Create a new instance.
 
@@ -50,12 +49,15 @@ class PythonKCMeetups(object):
         http_retries
             The number of times to retry requests when it is appropriate to do
             so. Defaults to 2.
+        group_urlname
+            THe name of the group you are getting data from.
 
         """
         self._api_key = api_key
         self._http_timeout = http_timeout
         self._http_retries = http_retries
         self._num_past_events = num_past_events
+        self._group_urlname = group_urlname
 
     def get_upcoming_events(self):
         """
@@ -77,7 +79,7 @@ class PythonKCMeetups(object):
         """
 
         query = urllib.urlencode({'key': self._api_key,
-                                  'group_urlname': GROUP_URLNAME})
+                                  'group_urlname': self._group_urlname})
         url = '{0}?{1}'.format(EVENTS_URL, query)
         data = self._http_get_json(url)
         events = data['results']
@@ -111,7 +113,7 @@ class PythonKCMeetups(object):
                     if event_id == event['id']]
 
         params = {'key': self._api_key,
-                  'group_urlname': GROUP_URLNAME,
+                  'group_urlname': self._group_urlname,
                   'status': 'past',
                   'desc': 'true'}
         if self._num_past_events:
